@@ -1,24 +1,36 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/use-color-scheme';
-
-export const unstable_settings = {
-  anchor: '(tabs)',
-};
+import {SplashScreen, Stack} from "expo-router";
+import "./globals.css";
+import {useFonts} from "expo-font";
+import {useEffect} from "react";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
+    // burada fontlari yukleyebiliriz
+    const [fontsLoaded] = useFonts({
+        'Rubik-Bold': require('../assets/fonts/Rubik-Bold.ttf'),
+        'Rubik-ExtraBold': require('../assets/fonts/Rubik-ExtraBold.ttf'),
+        'Rubik-Light': require('../assets/fonts/Rubik-Light.ttf'),
+        'Rubik-Medium': require('../assets/fonts/Rubik-Medium.ttf'),
+        'Rubik-Regular': require('../assets/fonts/Rubik-Regular.ttf'),
+        'Rubik-SemiBold': require('../assets/fonts/Rubik-SemiBold.ttf'),
 
-  return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
-  );
+    });
+
+    useEffect (() => {
+        if (fontsLoaded) {
+            SplashScreen.hideAsync(); //fontlar yuklendiginde splash screeni gizle
+        }
+    }, [fontsLoaded]); //burasi bos verildiginde ilk renderda calisir sadece bir kere, genelde veri cekmek, font yuklemek, animasyon baslatmak icin kullanilir
+
+    // BILGI
+    // useEffect(() => {
+    //     console.log("Fontlar yüklendi:", fontsLoaded);
+    // }, [fontsLoaded]);
+    // Burada fontsLoaded değiştiğinde (örneğin false → true olunca) useEffect yeniden çalışır.
+	// •	Yani: “Fontlar yüklendiğinde bir şey yap” demek gibi.
+
+    if (!fontsLoaded) {
+        return null; //stack e hic return etmesin
+    }
+
+    return <Stack screenOptions={{headerShown: false}} />;
 }
